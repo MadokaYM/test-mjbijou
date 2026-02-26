@@ -1,0 +1,238 @@
+{{ 'section-contact-form.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 768px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="color-{{ section.settings.color_scheme }} gradient scroll-trigger animate--fade-in">
+  <div class="contact page-width page-width--narrow section-{{ section.id }}-padding">
+    {%- if section.settings.heading != blank -%}
+      <p class="contact-text inline-richtext {{ section.settings.heading_size }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}">
+        {{ section.settings.heading | newline_to_br }}
+      </p>
+    {%- else -%}
+      <h2 class="visually-hidden">{{ 'templates.contact.form.title' | t }}</h2>
+    {%- endif -%}
+    {%- form 'contact', id: 'ContactForm', class: 'isolate' -%}
+      {%- if form.posted_successfully? -%}
+        <script>
+          window.location = '/pages/contact-thanks';
+        </script>
+        <h2 class="form-status form-status-list form__message" tabindex="-1" autofocus>
+          {{- 'icon-success.svg' | inline_asset_content -}}
+          {{ 'templates.contact.form.post_success' | t }}
+        </h2>
+      {%- elsif form.errors -%}
+        <div class="form__message">
+          <h2 class="form-status caption-large text-body" role="alert" tabindex="-1" autofocus>
+            {{- 'icon-error.svg' | inline_asset_content -}}
+            {{ 'templates.contact.form.error_heading' | t }}
+          </h2>
+        </div>
+        <ul class="form-status-list caption-large" role="list">
+          {%- for field in form.errors -%}
+            <li>
+              <a href="#ContactForm-{{ field }}" class="link">
+                {{ form.errors.translated_fields[field] | capitalize }}
+                {{ form.errors.messages[field] }}
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+      <div class="contact__fields" style="display: flex; flex-direction: column; gap: 0;">
+        <div class="contact__row">
+          <div class="field field--with-error" style="flex: 1;">
+            <input
+              class="field__input"
+              autocomplete="name"
+              type="text"
+              id="ContactForm-name"
+              name="contact[お名前]"
+              value="{{ form.name }}"
+              placeholder="お名前"
+              aria-required="true"
+              required
+            >
+            <label class="field__label" for="ContactForm-name">お名前 <span aria-hidden="true">*</span></label>
+          </div>
+          <div class="field field--with-error" style="flex: 1;">
+            <input
+              autocomplete="email"
+              type="email"
+              id="ContactForm-email"
+              class="field__input"
+              name="contact[email]"
+              spellcheck="false"
+              autocapitalize="off"
+              value="{{ form.email }}"
+              aria-required="true"
+              required
+              placeholder="メールアドレス"
+            >
+            <label class="field__label" for="ContactForm-email">メールアドレス <span aria-hidden="true">*</span></label>
+          </div>
+        </div>
+        <div class="field field--with-error" style="width: 100%;">
+          <input
+            type="tel"
+            id="ContactForm-phone"
+            class="field__input"
+            autocomplete="tel"
+            name="contact[{{ 'templates.contact.form.phone' | t }}]"
+            pattern="^(\d{10}|\d{11}|\d{3}-\d{4}-\d{4})$"
+            value="{{ form.phone }}"
+            placeholder="{{ 'templates.contact.form.phone' | t }}"
+            aria-required="true"
+            required
+          >
+          <label class="field__label" for="ContactForm-phone">
+            {{- 'templates.contact.form.phone' | t }}
+            <span aria-hidden="true">*</span></label
+          >
+        </div>
+        <div class="field field--with-error" style="width: 100%;">
+          <textarea
+            rows="10"
+            id="ContactForm-body"
+            class="text-area field__input"
+            name="contact[お問い合わせ内容]"
+            placeholder="お問い合わせ内容"
+            aria-required="true"
+            style="min-height: 182px;"
+            required
+          >{{ form.body }}</textarea>
+          <label class="form__label field__label" for="ContactForm-body"
+            >お問い合わせ内容 <span aria-hidden="true">*</span></label
+          >
+        </div>
+      </div>
+      {%- if section.settings.privacy_text != blank -%}
+        <div class="privacy-text">
+          {{ section.settings.privacy_text }}
+        </div>
+      {%- endif -%}
+
+      <div class="contact__button">
+        <button type="submit" class="button button--primary">
+          {{ 'templates.contact.form.send' | t }}
+        </button>
+      </div>
+      {% comment %}
+        <div class="contact__button">
+          <button type="submit" class="button button--primary">
+            {{ 'templates.contact.form.send' | t }}
+          </button>
+        </div>
+      {% endcomment %}
+    {%- endform -%}
+  </div>
+</div>
+
+<style>
+  @media screen and (min-width: 768px) {
+    .contact__row {
+      display: flex;
+      flex-direction: row;
+      gap: 2rem;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "t:sections.contact-form.name",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "heading",
+      "default": "お問い合わせフォームのテキストを入力してください。",
+      "label": "お問い合わせフォームのテキスト"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "options": [
+        {
+          "value": "h2",
+          "label": "t:sections.all.heading_size.options__1.label"
+        },
+        {
+          "value": "h1",
+          "label": "t:sections.all.heading_size.options__2.label"
+        },
+        {
+          "value": "h0",
+          "label": "t:sections.all.heading_size.options__3.label"
+        },
+        {
+          "value": "hxl",
+          "label": "t:sections.all.heading_size.options__4.label"
+        },
+        {
+          "value": "hxxl",
+          "label": "t:sections.all.heading_size.options__5.label"
+        }
+      ],
+      "default": "h1",
+      "label": "t:sections.all.heading_size.label"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "t:sections.all.padding.section_padding_heading"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "t:sections.all.padding.padding_bottom",
+      "default": 36
+    },
+    {
+      "type": "richtext",
+      "id": "privacy_text",
+      "label": "プライバシーポリシーの説明文",
+      "default": "<p>プライバシーポリシーに同意の上、『送信する』ボタンをクリックしてください。</p>"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:sections.contact-form.presets.name"
+    }
+  ]
+}
+{% endschema %}

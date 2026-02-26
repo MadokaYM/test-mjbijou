@@ -1,0 +1,80 @@
+{%- unless template == 'index' or template == 'cart' or template == '404' -%}
+  {%- assign t = template | split: '.' | first -%}
+
+  <div class="page-width" style="background-color: #ede8e2;">
+    <nav class="breadcrumbs" role="navigation" aria-label="breadcrumbs">
+      <ol class="breadcrumbs__list" itemscope itemtype="http://schema.org/BreadcrumbList">
+        <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="http://schema.org/ListItem">
+          <a itemprop="item" class="breadcrumbs__link" href="/">ホーム</a>
+        </li>
+
+        {%- case t -%}
+          {%- when 'list-collections' -%}
+            <li class="breadcrumbs__item">
+              <a class="breadcrumbs__link" href="/collections/" aria-current="page">カテゴリー</a>
+            </li>
+
+          {%- when 'collection' -%}
+            <li class="breadcrumbs__item">
+              <a class="breadcrumbs__link" href="/collections/">カテゴリー</a>
+            </li>
+            <li class="breadcrumbs__item">
+              <a class="breadcrumbs__link" href="{{ collection.url }}" aria-current="page">{{ collection.title }}</a>
+            </li>
+
+          {%- when 'product' -%}
+            <li class="breadcrumbs__item">
+              <a class="breadcrumbs__link" href="/collections/">カテゴリー</a>
+            </li>
+
+            {%- if product.type != blank -%}
+              {% comment %}商品タイプに一致するコレクションを検索{% endcomment %}
+              {%- for collection in collections -%}
+                {%- if collection.title == product.type -%}
+                  {%- assign matching_collection = collection -%}
+                  {%- break -%}
+                {%- endif -%}
+              {%- endfor -%}
+
+              {%- if matching_collection -%}
+                <li class="breadcrumbs__item">
+                  <a class="breadcrumbs__link" href="{{ matching_collection.url }}">{{ product.type }}</a>
+                </li>
+              {%- endif -%}
+            {%- endif -%}
+
+            <li class="breadcrumbs__item">
+              <a class="breadcrumbs__link" href="{{ product.url }}" aria-current="page">{{ product.title }}</a>
+            </li>
+
+          {%- when 'page' -%}
+            {%- assign parent_pages = page.metafields.custom.parent_pages | split: ',' -%}
+
+            {%- for parent_page in parent_pages -%}
+              {%- assign parent = pages[parent_page] -%}
+              <li class="breadcrumbs__item">
+                <a class="breadcrumbs__link" href="{{ parent.url }}">{{ parent.title }}</a>
+              </li>
+            {%- endfor -%}
+
+            <li class="breadcrumbs__item">
+              <a class="breadcrumbs__link" href="{{ page.url }}" aria-current="page">{{ page.title }}</a>
+            </li>
+
+          {%- when 'article' -%}
+            <li class="breadcrumbs__item">
+              <a class="breadcrumbs__link" href="{{ blog.url }}">{{ blog.title }}</a>
+            </li>
+            <li class="breadcrumbs__item">
+              <a class="breadcrumbs__link" href="{{ article.url }}" aria-current="page">{{ article.title }}</a>
+            </li>
+
+          {%- else -%}
+            <li class="breadcrumbs__item">
+              <a class="breadcrumbs__link" href="{{ request.path }}" aria-current="page">{{ page_title }}</a>
+            </li>
+        {%- endcase -%}
+      </ol>
+    </nav>
+  </div>
+{%- endunless -%}

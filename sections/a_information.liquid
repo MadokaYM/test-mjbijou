@@ -1,0 +1,46 @@
+{% assign blog = section.settings.information_blog %}
+<section class="information scroll-trigger animate--slide-in">
+  <div class="information-inner">
+    <ul class="information-list">
+      {% for article in blog.articles limit: 3 %}
+        <li class="information-item">
+          <a href="{{ article.url }}" class="information-item__link">
+            <time class="information-item__date" datetime="{{ article.published_at }}">
+              {{ article.published_at | date: '%Y.%m.%d' }}
+            </time>
+            <p class="information-item__text">
+              {{ article.title }}
+            </p>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "お知らせ",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "タイトル",
+      "default": "お知らせ"
+    },
+    {
+      "type": "blog",
+      "id": "information_blog",
+      "label": "お知らせ"
+    }
+  ],
+  "blocks": [],
+  "presets": [
+    {
+      "name": "お知らせ"
+    }
+  ]
+}
+{% endschema %}

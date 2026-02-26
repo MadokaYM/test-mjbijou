@@ -1,0 +1,84 @@
+{{ '//ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js' | script_tag }}
+{{ 'jquery.tmpl.min.js' | asset_url | script_tag }}
+{{ 'jquery.products.min.js' | asset_url | script_tag }}
+
+<style>
+  h2 {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    text-align: left;
+    margin-bottom: 3.2rem;
+  }
+
+  @media screen and (max-width: 767px) {
+    h2 {
+      font-size: 1.8rem;
+      margin-bottom: 2.4rem;
+    }
+  }
+</style>
+{% assign grid_item_width = 'small--one-half medium-up--one-quarter' %}
+<div class="clearfix"></div>
+<div class="product-template__container page-width head-room">
+  <div class="collection clearfix recently-viewed">
+    <div class="section-header">
+      <h2 class="section-header__title">最近チェックした商品</h2>
+    </div>
+    <div
+      id="recently-viewed-products"
+      class="recently-viewed__list grid grid--uniform grid--view-items leg-room"
+    >
+      {% raw %}
+      <script id="recently-viewed-product-template" type="text/x-jquery-tmpl">
+        <div class="item small--one-half medium-up--one-quarter" itemscope itemtype="http://schema.org/Product">
+          <div id="product-${handle}" class="products" style="position: relative;">
+            <div class="image recently-viewed__image">
+              <a href="${url}">
+                <img
+                  src="${Shopify.Products.resizeImage(featured_image, '1024x1024')}"
+                  srcset="
+                    ${Shopify.Products.resizeImage(featured_image, '480x480')} 480w,
+                    ${Shopify.Products.resizeImage(featured_image, '600x600')} 600w,
+                    ${Shopify.Products.resizeImage(featured_image, '1024x1024')} 1024w,
+                    ${Shopify.Products.resizeImage(featured_image, '2048x2048')} 2048w
+                  "
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                  alt="商品画像"
+                />
+              </a>
+              {{if compare_at_price > price}}
+                <div class="card__badge recently-viewed__badge">Sale</div>
+              {{/if}}
+              {{if available == false}}
+                  <div class="card__badge recently-viewed__badge sold-out">Sold Out</div>
+              {{/if}}
+            </div>
+            <div class="details">
+              <a href="${url}" style="text-decoration: none;">
+                <span class="h4 grid-view-item__title recently-viewed__title">${title}</span>
+              </a>
+              <div class="price recently-viewed__price">
+                {{if compare_at_price > price}}
+                  <span class="compare-price recently-viewed__price--compare">${(compare_at_price / 100).toLocaleString()}</span>
+                {{/if}}
+                {{if available == false}}
+                  <div class="card__badge recently-viewed__badge sold-out">Sold Out</div>
+                {{/if}}
+                <span class="recently-viewed__price--regular"">
+                  ${(price / 100).toLocaleString()}
+                </span>
+                <span class="recently-viewed__price--tax-in">円（税込）</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </script>
+      {% endraw %}
+      <script>
+        Shopify.Products.showRecentlyViewed({ howManyToShow: 4 });
+      </script>
+    </div>
+  </div>
+</div>

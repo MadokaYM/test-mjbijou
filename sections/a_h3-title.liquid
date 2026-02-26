@@ -1,0 +1,119 @@
+{{ 'section-rich-text.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 768px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+<style>
+  h3 {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    text-align: left;
+    margin-bottom: 3.2rem;
+  }
+
+  @media screen and (max-width: 767px) {
+    h3 {
+      font-size: 1.8rem;
+      margin-bottom: 2.4rem;
+    }
+  }
+</style>
+
+<div class="page-width">
+  <div class="isolate{% unless section.settings.full_width %} page-width{% endunless %}">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'heading' -%}
+        <h3
+          class="{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+          {{ block.shopify_attributes }}
+          {% if settings.animations_reveal_on_scroll %}
+            data-cascade
+            style="--animation-order: {{ forloop.index }};"
+          {% endif %}
+        >
+          {{ block.settings.heading }}
+        </h3>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "H3見出し",
+  "tag": "section",
+  "class": "section",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "select",
+      "id": "desktop_content_position",
+      "options": [
+        { "value": "left", "label": "t:sections.rich-text.settings.desktop_content_position.options__1.label" },
+        { "value": "center", "label": "t:sections.rich-text.settings.desktop_content_position.options__2.label" },
+        { "value": "right", "label": "t:sections.rich-text.settings.desktop_content_position.options__3.label" }
+      ],
+      "default": "center",
+      "label": "t:sections.rich-text.settings.desktop_content_position.label"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "options": [
+        { "value": "left", "label": "t:sections.rich-text.settings.content_alignment.options__1.label" },
+        { "value": "center", "label": "t:sections.rich-text.settings.content_alignment.options__2.label" },
+        { "value": "right", "label": "t:sections.rich-text.settings.content_alignment.options__3.label" }
+      ],
+      "default": "center",
+      "label": "t:sections.rich-text.settings.content_alignment.label"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "default": true,
+      "label": "t:sections.rich-text.settings.full_width.label"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "heading",
+      "name": "t:sections.rich-text.blocks.heading.name",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "html",
+          "id": "heading",
+          "default": "t:sections.rich-text.blocks.heading.settings.heading.default",
+          "label": "t:sections.rich-text.blocks.heading.settings.heading.label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "H3見出し",
+      "blocks": [{ "type": "heading" }]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,77 @@
+<div class="isolate page-width">
+  <div
+    class="button-list content-container scroll-trigger animate--fade-in"
+    style="--section-padding-top: {{ section.settings.padding_top }}px; --section-padding-bottom: {{ section.settings.padding_bottom }}px;"
+  >
+    <div class="button-list__wrapper">
+      <div class="button-list__blocks">
+        {%- for block in section.blocks -%}
+          <a
+            {% if block.settings.button_link == blank %}
+              role="link" aria-disabled="true" class="button-list__button disabled button button--primary"
+            {% else %}
+              href="{{ block.settings.button_link }}" class="button button--primary"
+            {% endif %}
+          >
+            {{- block.settings.button_label | escape -}}
+          </a>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "ボタンリスト",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "セクション上の余白",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "セクション下の余白",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 20,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "button",
+      "name": "ボタン",
+      "limit": 20,
+      "settings": [
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "ボタンラベル",
+          "default": "ボタンラベルを入力"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "ボタンリンク"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "ボタンリスト",
+      "blocks": [{ "type": "button" }, { "type": "button" }, { "type": "button" }, { "type": "button" }]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,135 @@
+<style>
+  /* チェックボックス */
+  #gift-wrapping {
+    width: 1.6rem;
+    height: 1.6rem;
+    appearance: none;
+    border: 1px solid var(--mainColor01);
+    background-color: var(--subColor10);
+    border-radius: 0.2rem;
+    cursor: pointer;
+    vertical-align: middle;
+    position: relative;
+    margin-left: -30px;
+  }
+
+  #gift-wrapping:checked::before {
+    content: '✔';
+    font-size: 10px;
+    color: var(--subColor02);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+</style>
+
+{% if linklists['gift-wrapping'].links.size > 0 and linklists['gift-wrapping'].links.first.type == 'product_link' %}
+  <div class="clearfix rte" style="clear: left; margin: 30px 0;">
+    <p style="line-height: 2; color: #292929; font-weight: 400; margin-left: 30px;">
+      <input
+        id="gift-wrapping"
+        type="checkbox"
+        name="attributes[ギフトラッピング]"
+        value="yes"
+        {% if cart.attributes['ギフトラッピング'] == 'yes' %}
+          checked="checked"
+        {% endif %}
+      >
+      <label for="gift-wrapping" style="display:inline; padding-left: 5px; cursor: pointer;">
+        1商品につき追加料金
+        {{ linklists['gift-wrapping'].links.first.object.price | money }}
+        円(税込)でギフトラッピングを承ります。ご希望の方はチェックしてカートにいれてください。
+      </label>
+    </p>
+  </div>
+
+  {% assign id = linklists['gift-wrapping'].links.first.object.variants.first.id %}
+  {% assign gift_wraps_in_cart = 0 %}
+  {% for item in cart.items %}
+    {% if item.id == id %}
+      {% assign gift_wraps_in_cart = item.quantity %}
+    {% endif %}
+  {% endfor %}
+
+  <style>
+    #updates_{{ id }} { display: none; }
+  </style>
+
+  <script>
+    Shopify.Cart = Shopify.Cart || {};
+    Shopify.Cart.GiftWrap = {};
+
+    Shopify.Cart.GiftWrap.set = function() {
+      var headers = new Headers({ 'Content-Type': 'application/json' });
+
+      var request = {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({ updates: { {{ id }}: 1 }, attributes: { 'ギフトラッピング': 'yes' } })
+      };
+      fetch('/cart/update.js', request)
+      .then(function() {
+        location.href = '/cart';
+      });
+    }
+
+    Shopify.Cart.GiftWrap.remove = function() {
+      var headers = new Headers({ 'Content-Type': 'application/json' });
+
+      var request = {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify({ updates: { {{ id }}: 0 }, attributes: { 'ギフトラッピング': '' } })
+      };
+      fetch('/cart/update.js', request)
+      .then(function() {
+        location.href = '/cart';
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", function(){
+      var giftCheckbox = document.querySelector('#gift-wrapping');
+
+      if (giftCheckbox) {
+        if (!{{ cart.attributes['ギフトラッピング'] | json }}) {
+          giftCheckbox.checked = false;
+        }
+      }
+
+      giftCheckbox.addEventListener("change", function(event) {
+        if (event.target.checked) {
+          Shopify.Cart.GiftWrap.set();
+        } else {
+          Shopify.Cart.GiftWrap.remove();
+        }
+      });
+
+      {% if gift_wraps_in_cart > 1 %}
+      Shopify.Cart.GiftWrap.set();
+      {% endif %}
+    });
+  </script>
+
+  <script>
+    {% comment %} バリデーションを非表示 {% endcomment %}
+    document.getElementById('gift-wrapping').addEventListener('invalid', function (event) {
+      event.preventDefault(); // デフォルトのエラーメッセージを防ぐ
+      this.setCustomValidity(''); // カスタムバリデーションメッセージを空にする
+    });
+  </script>
+
+{% else %}
+  <p style="clear: left; margin: 30px 0" class="rte">
+    ギフト包装のスクリプトをショッピングカートに追加しようとしましたが、正常に動作しません。<br>
+    これは、ハンドル <code>gift-wrapping</code> を持つリンクリストが存在しないためです。<br>
+    このリンクリストには、ギフト包装用の商品へのリンクが含まれている必要があります。<br>
+    詳しい手順については、<a
+      href="https://help.shopify.com/manual/online-store/themes/os/customize/add-gift-wrap-option"
+      target="_blank"
+      rel="noopener noreferrer nofollow"
+      >こちら</a
+    >
+    をご確認ください。
+  </p>
+{% endif %}

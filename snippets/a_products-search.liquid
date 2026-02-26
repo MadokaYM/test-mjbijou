@@ -1,0 +1,84 @@
+{% comment %}
+  商品検索用のシンプルな検索フォーム
+  - コレクションページ専用
+  - モーダルなし
+  - 検索フィールドの右側に検索アイコン
+  - Enterキーで検索実行可能
+{% endcomment %}
+
+{% comment %}
+  <form action="{{ routes.search_url }}" method="get" role="search" class="collection-search-form">
+    <div class="collection-search__field">
+      <input
+        class="collection-search__input"
+        id="CollectionSearchInput"
+        type="search"
+        name="q"
+        value="{{ results.terms | escape }}"
+        placeholder="アイテムを検索する"
+        aria-label="商品検索"
+      >
+      <input type="hidden" name="type" value="product">
+      <!-- 検索対象を商品に限定 -->
+      <input type="hidden" name="options[prefix]" value="last">
+      <!-- 完全一致を優先 -->
+
+      <button class="collection-search__button" type="submit" aria-label="検索">
+        <span class="svg-wrapper">
+          {{ 'icon-search.svg' | inline_asset_content }}
+        </span>
+      </button>
+    </div>
+  </form>
+
+  <style>
+    .collection-search-form {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      max-width: 400px; /* 検索フォームの最大幅を調整 */
+      margin: 0 auto;
+    }
+
+    .collection-search__field {
+      position: relative;
+      width: 100%;
+    }
+
+    .collection-search__input {
+      width: 100%;
+      padding: 10px 40px 10px 10px; /* 右側に余白を確保 */
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      outline: none;
+    }
+
+    .collection-search__input::placeholder {
+      font-size: 14px;
+      color: #999;
+    }
+
+    .collection-search__button {
+      position: absolute;
+      top: 50%;
+      right: 10px;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .collection-search__button .svg-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+    }
+
+    .collection-search__button:hover {
+      opacity: 0.7;
+    }
+  </style>
+{% endcomment %}

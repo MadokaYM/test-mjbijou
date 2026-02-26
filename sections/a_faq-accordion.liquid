@@ -1,0 +1,72 @@
+{{ 'component-accordion.css' | asset_url | stylesheet_tag }}
+{{ 'collapsible-content.css' | asset_url | stylesheet_tag }}
+
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 768px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+{%- endstyle -%}
+
+<div class="faq-container scroll-trigger animate--fade-in">
+  <div class="faq-header" onclick="toggleAllFAQs(this)">
+    {{ section.settings.heading }}
+  </div>
+  <div class="faq-content">
+    {%- for block in section.blocks -%}
+      <div class="faq-item">
+        <div class="faq-question" onclick="toggleFAQ(this)">
+          <span>{{ block.settings.question | escape }}</span>
+        </div>
+        <div class="faq-answer">
+          <span>{{ block.settings.answer | strip }}</span>
+        </div>
+      </div>
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "FAQアコーディオン",
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "タイトル",
+      "default": "よくある質問の大項目"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq",
+      "name": "FAQの質問・回答",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "質問"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "回答"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQアコーディオン",
+      "blocks": [{ "type": "faq" }, { "type": "faq" }, { "type": "faq" }]
+    }
+  ]
+}
+{% endschema %}

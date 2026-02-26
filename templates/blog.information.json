@@ -1,0 +1,54 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "rich_text_YWAiJ8": {
+      "type": "rich-text",
+      "blocks": {
+        "heading_mXXRUD": {
+          "type": "heading",
+          "settings": {
+            "heading": "Information",
+            "heading_size": "h1"
+          }
+        },
+        "text_Qj7BGB": {
+          "type": "text",
+          "settings": {
+            "text": "<p>お知らせ<\/p>"
+          }
+        }
+      },
+      "block_order": [
+        "heading_mXXRUD",
+        "text_Qj7BGB"
+      ],
+      "settings": {
+        "desktop_content_position": "center",
+        "content_alignment": "center",
+        "color_scheme": "",
+        "full_width": true,
+        "padding_top": 0,
+        "padding_bottom": 0
+      }
+    },
+    "main": {
+      "type": "a_archive-information",
+      "settings": {
+        "title": "お知らせ",
+        "information_blog": "information"
+      }
+    }
+  },
+  "order": [
+    "rich_text_YWAiJ8",
+    "main"
+  ]
+}

@@ -1,0 +1,169 @@
+{% comment %}
+  Renders a set of links for paginated results. Must be used within paginate tags.
+
+  Usage:
+  {% paginate results by 2 %}
+    {% render 'pagination', paginate: paginate, anchor: '#yourID' %}
+  {% endpaginate %}
+
+  Accepts:
+  - paginate: {Object}
+  - anchor: {String} (optional) This can be added so that on page reload it takes you to wherever you've placed your anchor tag.
+{% endcomment %}
+
+{{ 'component-pagination.css' | asset_url | stylesheet_tag }}
+
+{%- if paginate.parts.size > 0 -%}
+  <div class="pagination-wrapper animate--slide-in">
+    <nav class="pagination" role="navigation" aria-label="{{ 'general.pagination.label' | t }}">
+      <ul class="pagination__list list-unstyled" role="list">
+        {% comment %}
+          {%- if paginate.previous -%}
+            <li>
+              <a
+                href="{{ paginate.previous.url }}{{ anchor }}"
+                class="pagination__item pagination__item--next pagination__item-arrow link motion-reduce"
+                aria-label="{{ 'general.pagination.previous' | t }}"
+              >
+                <span class="svg-wrapper">
+                  {{- 'icon-caret.svg' | inline_asset_content -}}
+                </span>
+              </a>
+            </li>
+          {%- endif -%}
+        {% endcomment %}
+
+        {%- assign prev_page = paginate.current_page | minus: 1 -%}
+        {%- assign next_page = paginate.current_page | plus: 1 -%}
+        {%- assign first_page = 1 -%}
+        {%- assign last_page = paginate.pages -%}
+        {%- assign last_shown_page = 0 -%}
+
+        {%- for part in paginate.parts -%}
+          {%- assign part_number = part.title | plus: 0 -%}
+          {%- assign should_show = false -%}
+
+          {%- if part_number == first_page
+            or part_number == last_page
+            or part_number == paginate.current_page
+            or part_number == prev_page
+            or part_number == next_page
+          -%}
+            {%- assign should_show = true -%}
+          {%- endif -%}
+
+          {%- assign gap_exists = false -%}
+          {%- assign expected_next = last_shown_page | plus: 1 -%}
+          {%- if last_shown_page > 0 and part_number > expected_next -%}
+            {%- assign gap_exists = true -%}
+          {%- endif -%}
+
+          {%- if should_show -%}
+            {%- if gap_exists -%}
+              <li><span class="pagination__item">...</span></li>
+            {%- endif -%}
+
+            <li>
+              {%- if part_number == paginate.current_page -%}
+                <a
+                  role="link"
+                  aria-disabled="true"
+                  class="pagination__item pagination__item--current light"
+                  aria-current="page"
+                >
+                  {{ part.title }}
+                </a>
+              {%- else -%}
+                <a href="{{ part.url }}{{ anchor }}" class="pagination__item link">{{ part.title }}</a>
+              {%- endif -%}
+            </li>
+
+            {%- assign last_shown_page = part_number -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+        {% comment %}
+          {%- if paginate.next -%}
+            <li>
+              <a
+                href="{{ paginate.next.url }}{{ anchor }}"
+                class="pagination__item pagination__item--prev pagination__item-arrow link motion-reduce"
+                aria-label="{{ 'general.pagination.next' | t }}"
+              >
+                <span class="svg-wrapper">
+                  {{- 'icon-caret.svg' | inline_asset_content -}}
+                </span>
+              </a>
+            </li>
+          {%- endif -%}
+        {% endcomment %}
+      </ul>
+    </nav>
+  </div>
+{%- endif -%}
+
+{% comment %}
+  {%- if paginate.parts.size > 0 -%}
+    <div class="pagination-wrapper">
+      <nav class="pagination" role="navigation" aria-label="{{ 'general.pagination.label' | t }}">
+        <ul class="pagination__list list-unstyled" role="list">
+          {%- if paginate.previous -%}
+            <li>
+              <a
+                href="{{ paginate.previous.url }}{{ anchor }}"
+                class="pagination__item pagination__item--next pagination__item-arrow link motion-reduce"
+                aria-label="{{ 'general.pagination.previous' | t }}"
+              >
+                <span class="svg-wrapper">
+                  {{- 'icon-caret.svg' | inline_asset_content -}}
+                </span>
+              </a>
+            </li>
+          {%- endif -%}
+
+          {%- for part in paginate.parts -%}
+            <li>
+              {%- if part.is_link -%}
+                <a
+                  href="{{ part.url }}{{ anchor }}"
+                  class="pagination__item link"
+                  aria-label="{{ 'general.pagination.page' | t: number: part.title }}"
+                >
+                  {{- part.title -}}
+                </a>
+              {%- else -%}
+                {%- if part.title == paginate.current_page -%}
+                  <a
+                    role="link"
+                    aria-disabled="true"
+                    class="pagination__item pagination__item--current light"
+                    aria-current="page"
+                    aria-label="{{ 'general.pagination.page' | t: number: part.title }}"
+                  >
+                    {{- part.title -}}
+                  </a>
+                {%- else -%}
+                  <span class="pagination__item">{{ part.title }}</span>
+                {%- endif -%}
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+
+          {%- if paginate.next -%}
+            <li>
+              <a
+                href="{{ paginate.next.url }}{{ anchor }}"
+                class="pagination__item pagination__item--prev pagination__item-arrow link motion-reduce"
+                aria-label="{{ 'general.pagination.next' | t }}"
+              >
+                <span class="svg-wrapper">
+                  {{- 'icon-caret.svg' | inline_asset_content -}}
+                </span>
+              </a>
+            </li>
+          {%- endif -%}
+        </ul>
+      </nav>
+    </div>
+  {%- endif -%}
+{% endcomment %}
